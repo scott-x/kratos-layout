@@ -8,13 +8,15 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/scott-x/jwt/v4"
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server,jwtConf *conf.Jwt, bt *conf.Bootstrap, greeter *service.GreeterService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
+			jwt4.Auth(jwtConf.Secret,bt.GetWhiteList()), // 添加JWT认证中间件
 		),
 	}
 	if c.Http.Network != "" {
